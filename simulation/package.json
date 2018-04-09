@@ -1,0 +1,19 @@
+{
+  "name": "simulation",
+  "version": "1.0.0",
+  "description": "Simulate motion between multiple movers",
+  "main": "monitor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doerodney/space.git"
+  },
+  "author": "Rod Doe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doerodney/space/issues"
+  },
+  "homepage": "https://github.com/doerodney/space#readme"
+}
