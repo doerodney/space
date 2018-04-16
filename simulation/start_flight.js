@@ -15,7 +15,7 @@ let sCurrent = sAscent;
 const vAscent = 5.0;
 const vHorizontal = 40.0;
 const vDescent = -5.0;
-const vLanding = -0.5;
+const vLanding = -1.0;
 
 const from = process.argv[2] || 'HQ';
 const to = process.argv[3] || 'WH';
@@ -23,8 +23,6 @@ const to = process.argv[3] || 'WH';
 // positions 
 const xyzFrom = loc.getLocation(from);
 const xyzTo = loc.getLocation(to);
-console.log(xyzFrom);
-console.log(xyzTo);
 let xyzCurrent = xyzFrom;
 const ceiling = 50.0 + Math.max(xyzFrom.z, xyzTo.z);
 const zLanding = xyzTo.z + 10;
@@ -74,42 +72,44 @@ function getCourseAngle(xyzTo, xyzFrom) {
 function onIntervalComplete(err, data) {
 	switch (sCurrent) {
 		case sAscent:
-			xyzCurrent.z += dzAscent;
-			console.log('Ascent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			xyzCurrent.z += dzAscent;			
 			if (xyzCurrent.z > ceiling) {
 				xyzCurrent.z = ceiling;
 				sCurrent = sHorizontal;
+			} else {
+				console.log('Ascent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			}
 			break;
 
 		case sHorizontal:
 			xyzCurrent.x += dx;
-			xyzCurrent.y += dy;
-			console.log('Horizontal:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			xyzCurrent.y += dy;			
 			let dist = distXY(xyzCurrent.x, xyzCurrent.y, xyzTo.x, xyzTo.y);
 			console.log('Distance to descent point:', dist);
-			if (distXY < thresholdHorizontal) {
-				xyzCurrent.x = to.x;
-				xyzCurrent.y = to.y;
+			if (dist < thresholdHorizontal) {
+				xyzCurrent.x = xyzTo.x;
+				xyzCurrent.y = xyzTo.y;
 				xyzCurrent.z = ceiling;
 				sCurrent = sDescent;
+			} else {
+				console.log('Horizontal:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			}
 			break;
 
 		case sDescent:
-			xyzCurrent.z += dzDescent;
-			console.log('Descent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
-			if (xyzCurrent.z > zLanding) {
+			xyzCurrent.z += dzDescent;			
+			if (xyzCurrent.z < zLanding) {
 				sCurrent = sLanding;
 			}
+			console.log('Descent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			break;
 
 		case sLanding:
-			xyzCurrent.z += dzLanding;
+			xyzCurrent.z += dzLanding;	
 			console.log('Landing:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			if ((xyzCurrent.z - xyzTo.z) < thresholdLanding) {
 				clearInterval(intervalObj); // All done!
-			}
+			}			
 			break;
 
 		default:
