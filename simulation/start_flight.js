@@ -108,6 +108,7 @@ function onIntervalComplete(err, data) {
 			xyzCurrent.z += dzLanding;	
 			console.log('Landing:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			if ((xyzCurrent.z - xyzTo.z) < thresholdLanding) {
+                console.log('Landed:', xyzTo.x, ',', xyzTo.y, ',', xyzTo.z)
 				clearInterval(intervalObj); // All done!
 			}			
 			break;

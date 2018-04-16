@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/doerodney/space/issues"
   },
-  "homepage": "https://github.com/doerodney/space#readme"
+  "homepage": "https://github.com/doerodney/space#readme",
+  "devDependencies": {
+    "eslint-config-google": "^0.9.1"
+  }
 }
