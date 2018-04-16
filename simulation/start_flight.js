@@ -6,7 +6,7 @@ const msInterval = 1000;
 
 // states
 const sAscent = 0;
-const sHorizonal = 1;
+const sHorizontal = 1;
 const sDescent = 2;
 const sLanding = 3;
 let sCurrent = sAscent;
@@ -18,7 +18,7 @@ const vDescent = -5.0;
 const vLanding = -0.5;
 
 const from = process.argv[2] || 'HQ';
-const to = process.argv[3] || 'NE';
+const to = process.argv[3] || 'WH';
 
 // positions 
 const xyzFrom = loc.getLocation(from);
@@ -26,7 +26,7 @@ const xyzTo = loc.getLocation(to);
 console.log(xyzFrom);
 console.log(xyzTo);
 let xyzCurrent = xyzFrom;
-const ceiling = 100.0 + Math.max(xyzFrom.z, xyzTo.z);
+const ceiling = 50.0 + Math.max(xyzFrom.z, xyzTo.z);
 const zLanding = xyzTo.z + 10;
 
 // thresholds
@@ -37,11 +37,11 @@ const thresholdLanding = Math.abs(2 * vLanding);
 
 // angles
 const theta = getCourseAngle(xyzTo, xyzFrom);
-const dx = msInterval * 1000.0 * vHorizontal * Math.cos(theta);
-const dy = msInterval * 1000.0 * vHorizontal * Math.sin(theta);
-const dzAscent = msInterval * 1000.0 * vAscent;
-const dzDescent = msInterval * 1000.0 * vDescent;
-const dzLanding = msInterval + 1000.0 * vLanding;
+const dx = msInterval * vHorizontal * Math.cos(theta) / 1000.0;
+const dy = msInterval * vHorizontal * Math.sin(theta) / 1000.0;
+const dzAscent = msInterval * vAscent / 1000.0;
+const dzDescent = msInterval * vDescent / 1000.0;
+const dzLanding = msInterval * vLanding / 1000.0;
 
 // interval management
 let intervalObj = null;
@@ -75,19 +75,19 @@ function onIntervalComplete(err, data) {
 	switch (sCurrent) {
 		case sAscent:
 			xyzCurrent.z += dzAscent;
-			console.log('Ascent', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			console.log('Ascent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			if (xyzCurrent.z > ceiling) {
 				xyzCurrent.z = ceiling;
-				sCurrent = sHorizonal;
+				sCurrent = sHorizontal;
 			}
 			break;
 
-		case sHorizonal:
+		case sHorizontal:
 			xyzCurrent.x += dx;
 			xyzCurrent.y += dy;
-			console.log('Horizontal', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			console.log('Horizontal:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			let dist = distXY(xyzCurrent.x, xyzCurrent.y, xyzTo.x, xyzTo.y);
-			console.log('Distane to descent point:', dist);
+			console.log('Distance to descent point:', dist);
 			if (distXY < thresholdHorizontal) {
 				xyzCurrent.x = to.x;
 				xyzCurrent.y = to.y;
@@ -98,7 +98,7 @@ function onIntervalComplete(err, data) {
 
 		case sDescent:
 			xyzCurrent.z += dzDescent;
-			console.log('Descent', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			console.log('Descent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			if (xyzCurrent.z > zLanding) {
 				sCurrent = sLanding;
 			}
@@ -106,7 +106,7 @@ function onIntervalComplete(err, data) {
 
 		case sLanding:
 			xyzCurrent.z += dzLanding;
-			console.log('Landing', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			console.log('Landing:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
 			if ((xyzCurrent.z - xyzTo.z) < thresholdLanding) {
 				clearInterval(intervalObj); // All done!
 			}
@@ -124,5 +124,6 @@ const fromValid = loc.isValidLocation(from);
 const toValid = loc.isValidLocation(to);
 
 if (fromValid && toValid) {
+	console.log('Travel from', xyzFrom, 'to', xyzTo, 'at a ceiling of', ceiling);
 	intervalObj = setInterval(onIntervalComplete, msInterval);
 }
