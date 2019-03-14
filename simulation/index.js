@@ -76,8 +76,8 @@ function onIntervalComplete(err, data) {
 			if (xyzCurrent.z > ceiling) {
 				xyzCurrent.z = ceiling;
 				sCurrent = sHorizontal;
-			} else {
-				console.log('Ascent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			} else {				
+				console.log(`Ascent: ${xyzCurrent.x}, ${xyzCurrent.y}, ${xyzCurrent.z}`);
 			}
 			break;
 
@@ -85,14 +85,14 @@ function onIntervalComplete(err, data) {
 			xyzCurrent.x += dx;
 			xyzCurrent.y += dy;			
 			let dist = distXY(xyzCurrent.x, xyzCurrent.y, xyzTo.x, xyzTo.y);
-			console.log('Distance to descent point:', dist);
+			console.log(`Distance to descent point: ${dist.toFixed(2)}`);
 			if (dist < thresholdHorizontal) {
 				xyzCurrent.x = xyzTo.x;
 				xyzCurrent.y = xyzTo.y;
 				xyzCurrent.z = ceiling;
 				sCurrent = sDescent;
 			} else {
-				console.log('Horizontal:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+				console.log(`Horizontal: ${xyzCurrent.x.toFixed(2)}, ${xyzCurrent.y.toFixed(2)}, ${xyzCurrent.z.toFixed(2)}`);
 			}
 			break;
 
@@ -101,14 +101,14 @@ function onIntervalComplete(err, data) {
 			if (xyzCurrent.z < zLanding) {
 				sCurrent = sLanding;
 			}
-			console.log('Descent:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			console.log(`Descent: ${xyzCurrent.x}, ${xyzCurrent.y}, ${xyzCurrent.z}`);
 			break;
 
 		case sLanding:
 			xyzCurrent.z += dzLanding;	
-			console.log('Landing:', xyzCurrent.x, ',', xyzCurrent.y, ',', xyzCurrent.z);
+			console.log(`Landing: ${xyzCurrent.x}, ${xyzCurrent.y}, ${xyzCurrent.z}`);
 			if ((xyzCurrent.z - xyzTo.z) < thresholdLanding) {
-                console.log('Landed:', xyzTo.x, ',', xyzTo.y, ',', xyzTo.z)
+                console.log(`Landed: ${xyzTo.x}, ${xyzTo.y}, ${xyzTo.z}`)
 				clearInterval(intervalObj); // All done!
 			}			
 			break;
@@ -117,7 +117,6 @@ function onIntervalComplete(err, data) {
 			console.log('Invalid state detected.');
 			break;
 	}
-
 }
 
 
@@ -125,6 +124,8 @@ const fromValid = loc.isValidLocation(from);
 const toValid = loc.isValidLocation(to);
 
 if (fromValid && toValid) {
-	console.log('Travel from', xyzFrom, 'to', xyzTo, 'at a ceiling of', ceiling);
+	console.log(`Travel from ${xyzFrom.x}, ${xyzFrom.y}, ${xyzFrom.z}`); 
+	console.log(`Travel to ${xyzTo.x}, ${xyzTo.y}, ${xyzTo.z}`);   
+	console.log(`Ceiling: ${ceiling}`);
 	intervalObj = setInterval(onIntervalComplete, msInterval);
 }
